@@ -52,6 +52,8 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
+app.set("json spaces", 2);
+
 // Create new user
 app.post("/api/users", async function (req, res) {
   let username = req.body.username;
@@ -118,7 +120,46 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   });
 });
 
-//
+app.get("/api/users/:_id/logs", async (req, res) => {
+  const id = req.params._id;
+  const { from, to, limit } = req.query;
+
+  let user = await User.findById(id);
+
+  if (!user) {
+    res.json({ error: "Could not find user" });
+    return;
+  }
+
+  let exercises = user.exercises.map((exercise) => {
+    return {
+      description: exercise.description,
+      duration: exercise.duration,
+      date: exercise.date,
+    };
+  });
+
+  if (from) {
+    var fromDate = new Date(from);
+    exercises = exercises.filter((exercise) => new Date(exercise.date) >= fromDate);
+  }
+
+  if (to) {
+    var toDate = new Date(to);
+    exercises = exercises.filter((exercise) => new Date(exercise.date) <= toDate);
+  }
+
+  if (limit) {
+    exercises = exercises.slice(0, +limit);
+  }
+
+  res.json({
+    username: user.username,
+    count: exercises.length,
+    _id: user._id,
+    log: exercises,
+  });
+});
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
