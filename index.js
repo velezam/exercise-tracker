@@ -37,6 +37,36 @@ app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
 
+// Create new user
+app.post("/api/users", async function(req, res) {
+  let username = req.body.username
+
+  if (!username) {
+    res.json({ error: "No username entered" })
+  }
+
+  // see if user already exists
+  let user = await User.findOne({ username: username })
+
+  // if username does not exist, create new user and send response
+  if (!user) {
+    let newUser = await User.create({
+      username: username
+    })
+
+    res.json({
+      username: newUser.username,
+      _id: newUser._id
+    })
+
+  } else {
+    // send user that was found
+    res.json({
+      username: user.username,
+      _id: user._id
+    })
+  }
+})
 
 
 
