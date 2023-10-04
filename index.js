@@ -26,20 +26,7 @@ const userSchema = new mongoose.Schema({
   ],
 });
 
-// const exerciseSchema = new mongoose.Schema({
-//   username: {
-//     type: mongoose.Schema.types.ObjectId, ref: 'User'
-//   },
-//   description: String,
-//   duration: Number,
-//   date: String,
-//   _id: {
-//     type: mongoose.Schema.Types.ObjectId, ref: 'User'
-//   }
-// }, { _id: false });
-
 const User = mongoose.model("User", userSchema);
-// const Exercise = mongoose.model("Exercise", exerciseSchema);
 
 app.use(cors());
 app.use(express.static("public"));
@@ -52,6 +39,7 @@ app.get("/", (req, res) => {
   res.sendFile(__dirname + "/views/index.html");
 });
 
+// formats json output into more tree-like structure
 app.set("json spaces", 2);
 
 // Create new user
@@ -120,6 +108,7 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   });
 });
 
+// Get user's exercise log
 app.get("/api/users/:_id/logs", async (req, res) => {
   const id = req.params._id;
   const { from, to, limit } = req.query;
