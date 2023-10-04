@@ -68,6 +68,11 @@ app.post("/api/users", async function(req, res) {
   }
 })
 
+// Get list of all users
+app.get("/api/users", async function(req, res) {
+  let users = await User.find({}).select("id username")
+  res.json(users)
+})
 
 
 
