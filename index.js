@@ -14,14 +14,16 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true,
   },
-  exercises: [{
-    type: {
-      description: String,
-      duration: Number,
-      date: String,
+  exercises: [
+    {
+      type: {
+        description: String,
+        duration: Number,
+        date: String,
+      },
+      required: false,
     },
-    required: false
-  }],
+  ],
 });
 
 // const exerciseSchema = new mongoose.Schema({
@@ -55,13 +57,12 @@ app.post("/api/users", async function (req, res) {
   let username = req.body.username;
 
   if (!username) {
-    res.json({ error: "No username entered" });
+    res.json({ error: "Username is required" });
+    return;
   }
 
-  // see if user already exists
   let user = await User.findOne({ username: username });
 
-  // if username does not exist, create new user and send response
   if (!user) {
     let newUser = await User.create({
       username: username,
@@ -71,13 +72,14 @@ app.post("/api/users", async function (req, res) {
       username: newUser.username,
       _id: newUser._id,
     });
-  } else {
-    // send user that was found
-    res.json({
-      username: user.username,
-      _id: user._id,
-    });
+
+    return;
   }
+
+  res.json({
+    username: user.username,
+    _id: user._id,
+  });
 });
 
 // Get list of all users
@@ -103,10 +105,10 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       username: user.username,
       description: description,
       duration: +duration,
-      date: date ? new Date(date).toDateString(): new Date().toDateString(),
-    })
+      date: date ? new Date(date).toDateString() : new Date().toDateString(),
+    });
 
-    await user.save()
+    await user.save();
 
     res.json({
       username: user.username,
@@ -115,11 +117,12 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
       date: date ? new Date(date).toDateString() : new Date().toDateString(),
       _id: user._id,
     });
-
   } catch (err) {
     res.json({ error: "Error while saving exercise" });
   }
 });
+
+//
 
 const listener = app.listen(process.env.PORT || 3000, () => {
   console.log("Your app is listening on port " + listener.address().port);
