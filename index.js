@@ -93,33 +93,29 @@ app.post("/api/users/:_id/exercises", async (req, res) => {
   const id = req.params._id;
   const { description, duration, date } = req.body;
 
-  try {
-    let user = await User.findById(id);
+  let user = await User.findById(id);
 
-    if (!user) {
-      res.json({ error: "Could not find user" });
-      return;
-    }
-
-    user.exercises.push({
-      username: user.username,
-      description: description,
-      duration: +duration,
-      date: date ? new Date(date).toDateString() : new Date().toDateString(),
-    });
-
-    await user.save();
-
-    res.json({
-      username: user.username,
-      description: description,
-      duration: +duration,
-      date: date ? new Date(date).toDateString() : new Date().toDateString(),
-      _id: user._id,
-    });
-  } catch (err) {
-    res.json({ error: "Error while saving exercise" });
+  if (!user) {
+    res.json({ error: "Could not find user" });
+    return;
   }
+
+  user.exercises.push({
+    username: user.username,
+    description: description,
+    duration: +duration,
+    date: date ? new Date(date).toDateString() : new Date().toDateString(),
+  });
+
+  await user.save();
+
+  res.json({
+    username: user.username,
+    description: description,
+    duration: +duration,
+    date: date ? new Date(date).toDateString() : new Date().toDateString(),
+    _id: user._id,
+  });
 });
 
 //
