@@ -7,6 +7,25 @@ require('dotenv').config()
 const mongoose = require('mongoose')
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
 
+// setup schemas
+const userSchema = new mongoose.Schema({
+  username: {
+    type: String,
+    unique: true,
+    required: true
+  }
+})
+
+const exerciseSchema = new mongoose.Schema({
+  user_id: { type: String, required: true },
+  description: String,
+  duration: Number,
+  date: String
+})
+
+const User = mongoose.model("User", userSchema)
+const Exercise = mongoose.model("Exercise", exerciseSchema)
+
 app.use(cors())
 app.use(express.static('public'))
 app.get('/', (req, res) => {
