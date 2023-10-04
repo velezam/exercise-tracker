@@ -28,6 +28,11 @@ const Exercise = mongoose.model("Exercise", exerciseSchema)
 
 app.use(cors())
 app.use(express.static('public'))
+
+// add parsing for json and url for POST method
+app.use(express.json())
+app.use(express.urlencoded({ extended: true }))
+
 app.get('/', (req, res) => {
   res.sendFile(__dirname + '/views/index.html')
 });
